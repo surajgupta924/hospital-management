@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import env from './config/env.js';
 import routes from './routes/index.js';
+import authRoutes from './routes/auth.routes.js';
 import errorHandler, { notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -58,6 +59,13 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/v1', routes);
+
+// Fallback for clients calling /auth/* without /api/v1 prefix
+app.use('/auth', authRoutes);
+
+app.get('/health', (req, res) => {
+  res.redirect('/api/v1/health');
+});
 
 app.use(notFound);
 app.use(errorHandler);

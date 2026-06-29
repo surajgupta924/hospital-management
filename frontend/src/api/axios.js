@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from './config.js';
+import { API_BASE_URL, buildApiUrl } from './config.js';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +8,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  if (config.url?.startsWith('/')) {
+    config.url = config.url.slice(1);
+  }
+
   const token = localStorage.getItem('accessToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -43,7 +47,11 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {}, { withCredentials: true });
+        const { data } = await axios.post(
+          buildApiUrl('auth/refresh-token'),
+          {},
+          { withCredentials: true }
+        );
         const newToken = data.data.accessToken;
         localStorage.setItem('accessToken', newToken);
         processQueue(null, newToken);
