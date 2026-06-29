@@ -16,6 +16,33 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Health check first (used by Render + uptime monitors)
+app.get('/api/v1/health', (req, res) => {
+  res.json({ success: true, message: 'HMS API is running', timestamp: new Date().toISOString() });
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'HMS API Server',
+    apiBase: '/api/v1',
+    health: '/api/v1/health',
+    login: '/api/v1/auth/login',
+  });
+});
+
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Use /api/v1 as the API base path',
+    health: '/api/v1/health',
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.redirect('/api/v1/health');
+});
+
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
   origin: (origin, callback) => {
@@ -40,32 +67,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'HMS API Server',
-    apiBase: '/api/v1',
-    health: '/api/v1/health',
-    login: '/api/v1/auth/login',
-  });
-});
-
-app.get('/api', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Use /api/v1 as the API base path',
-    health: '/api/v1/health',
-  });
-});
-
 app.use('/api/v1', routes);
 
 // Fallback for clients calling /auth/* without /api/v1 prefix
 app.use('/auth', authRoutes);
-
-app.get('/health', (req, res) => {
-  res.redirect('/api/v1/health');
-});
 
 app.use(notFound);
 app.use(errorHandler);
