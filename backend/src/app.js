@@ -17,7 +17,13 @@ const app = express();
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
-  origin: env.clientUrl,
+  origin: (origin, callback) => {
+    if (!origin || env.clientUrls.includes(origin)) {
+      callback(null, origin || env.clientUrls[0]);
+      return;
+    }
+    callback(null, false);
+  },
   credentials: true,
 }));
 app.use(morgan(env.nodeEnv === 'development' ? 'dev' : 'combined'));

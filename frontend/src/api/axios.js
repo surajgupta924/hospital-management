@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from './config.js';
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
@@ -42,7 +43,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post('/api/v1/auth/refresh-token', {}, { withCredentials: true });
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {}, { withCredentials: true });
         const newToken = data.data.accessToken;
         localStorage.setItem('accessToken', newToken);
         processQueue(null, newToken);

@@ -11,7 +11,11 @@ const env = {
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  clientUrl: (process.env.CLIENT_URL || 'http://localhost:5173').split(',')[0].trim(),
+  clientUrls: (process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean),
   smtp: {
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT || '587', 10),
