@@ -23,6 +23,12 @@ export const formatCurrency = (amount, currency = 'USD') => {
 };
 
 export const getErrorMessage = (error) => {
+  if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+    return 'Cannot reach API server. Check VITE_API_URL on Vercel, Render backend health, and MongoDB Atlas network access.';
+  }
+  if (error.code === 'ECONNABORTED') {
+    return 'Request timed out. Render free tier may be waking up — wait 1 minute and try again.';
+  }
   return error.response?.data?.message || error.message || 'Something went wrong';
 };
 
