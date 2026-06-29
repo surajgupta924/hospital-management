@@ -47,7 +47,10 @@ const errorHandler = (err, req, res, next) => {
 };
 
 export const notFound = (req, res, next) => {
-  next(new ApiError(404, `Route not found: ${req.originalUrl}`));
+  next(new ApiError(404, 'Route not found', [{
+    field: 'path',
+    message: `${req.method} ${req.originalUrl} is not a valid API route. API base path is /api/v1`,
+  }]));
 };
 
 export default errorHandler;
