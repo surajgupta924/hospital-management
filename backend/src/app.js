@@ -7,7 +7,7 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import env from './config/env.js';
-import { corsOriginHandler } from '../utils/cors.js';
+import { corsOriginHandler } from './utils/cors.js';
 import routes from './routes/index.js';
 import authRoutes from './routes/auth.routes.js';
 import errorHandler, { notFound } from './middleware/errorHandler.js';
