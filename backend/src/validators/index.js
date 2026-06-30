@@ -10,14 +10,21 @@ const passwordSchema = z
 
 export const registerSchema = z.object({
   body: z.object({
-    firstName: z.string().min(2).max(50),
-    lastName: z.string().min(2).max(50),
-    email: z.string().email(),
+    firstName: z.string().trim().min(2).max(50),
+    lastName: z.string().trim().min(2).max(50),
+    email: z.string().trim().email(),
     password: passwordSchema,
-    phone: z.string().optional(),
+    phone: z.string().trim().optional(),
     role: z.enum([ROLES.HOSPITAL_ADMIN, ROLES.PATIENT]).optional(),
-    hospitalName: z.string().min(2).optional(),
-    hospitalSlug: z.string().min(2).regex(/^[a-z0-9-]+$/).optional(),
+    hospitalName: z.string().trim().min(2).optional(),
+    hospitalSlug: z.string().trim().min(2).regex(/^[a-z0-9-]+$/).optional(),
+  }).superRefine((data, ctx) => {
+    if (data.hospitalName && !data.hospitalSlug) {
+      ctx.addIssue({ code: 'custom', message: 'Hospital slug is required', path: ['hospitalSlug'] });
+    }
+    if (data.hospitalSlug && !data.hospitalName) {
+      ctx.addIssue({ code: 'custom', message: 'Hospital name is required', path: ['hospitalName'] });
+    }
   }),
 });
 

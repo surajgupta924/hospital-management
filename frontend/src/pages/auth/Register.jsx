@@ -20,7 +20,10 @@ const Register = () => {
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
       if (name === 'hospitalName') {
-        updated.hospitalSlug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        updated.hospitalSlug = value
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
       }
       return updated;
     });
@@ -30,7 +33,16 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await register(form);
+      const payload = {
+        ...form,
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        hospitalName: form.hospitalName.trim(),
+        hospitalSlug: form.hospitalSlug.trim(),
+      };
+      await register(payload);
       toast.success('Hospital registered successfully!');
       navigate('/dashboard');
     } catch (error) {
@@ -55,6 +67,9 @@ const Register = () => {
           <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} required />
           <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} />
           <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} required />
+          <p className="text-xs text-gray-500">
+            Password must be at least 8 characters with uppercase, lowercase, and a number (e.g. Admin@12345).
+          </p>
           <Button type="submit" loading={loading} className="w-full">Create Account</Button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-500">
